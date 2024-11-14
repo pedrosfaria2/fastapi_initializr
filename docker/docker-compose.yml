@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: fastapi-initializr:latest
+    container_name: fastapi-initializr
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - PORT=8000
+    volumes:
+      - ../src:/app/src  # For development hot-reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - fastapi-network
+
+  dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: builder  # Uses the builder stage for development
+    image: fastapi-initializr-dev:latest
+    container_name: fastapi-initializr-dev
+    ports:
+      - "8001:8000"  # Different port to avoid conflict with api service
+    environment:
+      - ENVIRONMENT=development
+      - PORT=8000
+    volumes:
+      - ..:/app
+    command: poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - fastapi-network
+
+networks:
+  fastapi-network:
+    driver: bridge

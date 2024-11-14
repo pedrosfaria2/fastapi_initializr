@@ -1,0 +1,12 @@
+types:
+  feat: "✨ "     # New feature
+  fix: "🐛 "      # Bug fixes
+  docs: "📚 "     # Documentation changes
+  style: "💎 "    # Code style changes
+  refactor: "♻️ " # Code refactoring
+  perf: "⚡️ "    # Performance improvements
+  test: "🧪 "     # Tests
+  build: "🛠 "    # Build system changes
+  ci: "👷 "       # CI/CD changes
+  chore: "🧹 "    # Other changes
+  revert: "⏪ "   # Reverts
