@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.infrastructure.api.health import HealthAPI
 from src.infrastructure.api.generator import GeneratorAPI
 from src.infrastructure.config.settings import settings
+from src.infrastructure.middleware.request_logging_middleware import RequestLoggingMiddleware
 
 
 class APIBuilder:
@@ -12,6 +13,17 @@ class APIBuilder:
         self._configure_routes()
 
     def _configure_middlewares(self):
+        self.app.add_middleware(
+            RequestLoggingMiddleware,
+            exclude_paths={"/health"},
+            log_request_body=True,
+            log_response_body=True,
+            mask_sensitive_data=True,
+            include_timing=True,
+            include_request_id=True,
+            log_level="DEBUG" if settings.ENVIRONMENT != "production" else "INFO",
+        )
+
         self.app.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],
