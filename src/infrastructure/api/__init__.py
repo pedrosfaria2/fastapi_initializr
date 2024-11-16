@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.infrastructure.api.health import HealthAPI
 from src.infrastructure.api.generator import GeneratorAPI
 from src.infrastructure.config.settings import settings
+from src.infrastructure.middleware.logging.request_logging_middleware import RequestLoggingMiddleware
+from src.infrastructure.middleware.rate_limiting.middleware import RateLimitingMiddleware
 
 
 class APIBuilder:
@@ -12,6 +14,23 @@ class APIBuilder:
         self._configure_routes()
 
     def _configure_middlewares(self):
+
+        self.app.add_middleware(
+            RateLimitingMiddleware,
+            requests_limit=100,
+            window_seconds=60,
+            exclude_paths={"/health", "/metrics"},
+        )
+
+        self.app.add_middleware(
+            RequestLoggingMiddleware,
+            exclude_paths={"/health"},
+            log_request_body=True,
+            log_response_body=True,
+            mask_sensitive_data=True,
+            include_timing=True,
+        )
+
         self.app.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],
