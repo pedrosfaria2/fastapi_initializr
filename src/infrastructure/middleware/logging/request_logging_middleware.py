@@ -5,14 +5,9 @@ from contextlib import asynccontextmanager
 import time
 
 from .base import BaseCustomMiddleware
-from .logging.request_logger import RequestLogger
-from .logging.response_logger import ResponseLogger
-from .logging.constants import (
-    DEFAULT_EXCLUDED_PATHS,
-    DEFAULT_EXCLUDED_METHODS,
-    LogLevel,
-    nullcontext,
-)
+from .constants import DEFAULT_EXCLUDED_PATHS, DEFAULT_EXCLUDED_METHODS, nullcontext, LogLevel
+from .request_logger import RequestLogger
+from .response_logger import ResponseLogger
 
 
 class RequestLoggingMiddleware(BaseCustomMiddleware):
@@ -28,6 +23,7 @@ class RequestLoggingMiddleware(BaseCustomMiddleware):
         include_timing: bool = True,
     ):
         super().__init__(app)
+        self.duration_ms = None
         self.exclude_paths = exclude_paths or DEFAULT_EXCLUDED_PATHS
         self.exclude_methods = exclude_methods or DEFAULT_EXCLUDED_METHODS
         self.include_timing = include_timing

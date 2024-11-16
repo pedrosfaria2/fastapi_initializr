@@ -5,7 +5,7 @@ import time
 import json
 from json.decoder import JSONDecodeError
 
-from .models import RequestTiming
+from src.infrastructure.middleware.logging.models import RequestTiming
 
 
 @asynccontextmanager
