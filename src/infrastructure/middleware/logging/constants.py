@@ -1,4 +1,10 @@
 from enum import Enum
+from contextlib import contextmanager
+
+
+@contextmanager
+def nullcontext():
+    yield
 
 
 class LogLevel(str, Enum):
