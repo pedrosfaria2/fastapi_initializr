@@ -1,7 +1,7 @@
 from fastapi import Request
 from datetime import datetime, UTC
 import uuid
-from typing import Dict, Any, Tuple
+from typing import Dict, Any
 import json
 from json.decoder import JSONDecodeError
 from loguru import logger
@@ -29,7 +29,7 @@ class RequestLogger:
     def get_request_id(self, request: Request) -> str:
         return request.headers.get(self.request_id_header) or str(uuid.uuid4())
 
-    async def build_log(self, request: Request) -> Dict[str, Any]:
+    async def build_log(self, request: Request) -> tuple[Dict[str, Any], str]:
         request_id = self.get_request_id(request)
         correlation_id = request.headers.get(self.correlation_id_header)
 
