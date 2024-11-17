@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   api:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
     image: {{ project_name }}:latest
     container_name: {{ project_name }}
     ports:
@@ -12,7 +10,7 @@ services:
     environment:
       - PORT=8000
     volumes:
-      - .:/app  # For development hot-reload
+      - ..:/app  # For development hot-reload
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
