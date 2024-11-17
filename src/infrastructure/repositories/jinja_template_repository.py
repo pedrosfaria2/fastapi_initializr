@@ -21,12 +21,10 @@ class JinjaTemplateRepository(TemplateRepository):
             TemplateType.MINIMAL.value: {
                 "main.py": f"{template_dir}/main.py.jinja",
                 "requirements.txt": f"{template_dir}/requirements.txt.jinja",
-                "README.md": f"{template_dir}/README.md.jinja",
                 ".gitignore": f"{template_dir}/gitignore.jinja",
             }
         }
         return template_mapping.get(template_type.lower(), {})
 
     def get_template_content(self, template_path: str) -> Template:
-        """Get the Jinja2 Template object for a specific template file"""
         return self.env.get_template(template_path)
