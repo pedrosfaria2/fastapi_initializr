@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response
 from src.infrastructure.schemas.project import ProjectSchema
 from src.application.services.project_service import ProjectService
-from src.infrastructure.services.jinja_project_generator import JinjaProjectGenerator
+from src.infrastructure.generators.jinja_project_generator import JinjaProjectGenerator
 from src.infrastructure.repositories.jinja_template_repository import (
     JinjaTemplateRepository,
 )
