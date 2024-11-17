@@ -21,6 +21,16 @@ class JinjaProjectGenerator(ProjectGenerator):
                     f"No templates found for type: {project.template_type}"
                 )
 
+            if project.include_dockerfile:
+                template_files["docker/Dockerfile"] = "docker/Dockerfile.jinja"
+
+            if project.include_docker_compose:
+                template_files["docker/docker-compose.yml"] = (
+                    "docker/docker-compose.yml.jinja"
+                )
+
+            template_files["README.md"] = "readme/README.md.jinja"
+
             context = {
                 "project_name": project.name,
                 "description": project.description,
@@ -28,6 +38,8 @@ class JinjaProjectGenerator(ProjectGenerator):
                 "author": project.author,
                 "fastapi_version": project.dependencies["fastapi"],
                 "uvicorn_version": project.dependencies["uvicorn"],
+                "include_dockerfile": project.include_dockerfile,
+                "include_docker_compose": project.include_docker_compose,
             }
 
             zip_buffer = io.BytesIO()
