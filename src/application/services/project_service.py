@@ -1,6 +1,6 @@
 from src.domain.entities.project import Project
 from src.domain.services.project_generator import ProjectGenerator
-from src.infrastructure.schemas.project import ProjectDTO
+from src.infrastructure.schemas.project import ProjectSchema
 import tempfile
 from pathlib import Path
 
@@ -9,7 +9,7 @@ class ProjectService:
     def __init__(self, project_generator: ProjectGenerator):
         self.project_generator = project_generator
 
-    def create_project(self, project_dto: ProjectDTO) -> bytes:
+    def create_project(self, project_dto: ProjectSchema) -> bytes:
         project = Project(
             name=project_dto.project_name,
             description=project_dto.description,

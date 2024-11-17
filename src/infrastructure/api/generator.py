@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Response
-from src.infrastructure.schemas.project import ProjectDTO
+from src.infrastructure.schemas.project import ProjectSchema
 from src.application.services.project_service import ProjectService
 from src.infrastructure.services.jinja_project_generator import JinjaProjectGenerator
 from src.infrastructure.repositories.jinja_template_repository import (
@@ -20,7 +20,7 @@ class GeneratorAPI:
 
     def _configure_routes(self):
         @self.router.post("/create")
-        async def create_project(project_config: ProjectDTO):
+        async def create_project(project_config: ProjectSchema):
             try:
                 zip_content = self.project_service.create_project(project_config)
 
