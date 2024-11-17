@@ -1,0 +1,48 @@
+# Builder stage
+FROM python:{{ python_version }}-slim as builder
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies required for building Python packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application
+COPY . .
+
+# Production stage
+FROM python:{{ python_version }}-slim
+
+# Set working directory
+WORKDIR /app
+
+# Create non-root user
+RUN adduser --disabled-password --gecos '' appuser
+
+# Copy only necessary files from builder
+COPY --from=builder /usr/local/lib/python{{ python_version }}/site-packages/ /usr/local/lib/python{{ python_version }}/site-packages/
+COPY --from=builder /app /app
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8000
+
+# Switch to non-root user
+USER appuser
+
+# Expose port
+EXPOSE $PORT
+
+# Run the application
+CMD ["python", "main.py"]
