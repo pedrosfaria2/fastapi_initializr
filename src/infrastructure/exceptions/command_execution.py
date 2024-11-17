@@ -5,11 +5,11 @@ class CommandValidationError(Exception):
     """Exception raised when command validation fails"""
 
     def __init__(
-            self,
-            message: str,
-            command_name: str,
-            details: Optional[Dict[str, Any]] = None,
-            original_error: Optional[Exception] = None
+        self,
+        message: str,
+        command_name: str,
+        details: Optional[Dict[str, Any]] = None,
+        original_error: Optional[Exception] = None,
     ):
         self.command_name = command_name
         self.details = details or {}
@@ -28,11 +28,11 @@ class CommandExecutionError(Exception):
     """Exception raised when command execution fails"""
 
     def __init__(
-            self,
-            message: str,
-            command_name: str,
-            details: Optional[Dict[str, Any]] = None,
-            original_error: Optional[Exception] = None
+        self,
+        message: str,
+        command_name: str,
+        details: Optional[Dict[str, Any]] = None,
+        original_error: Optional[Exception] = None,
     ):
         self.command_name = command_name
         self.details = details or {}
@@ -51,11 +51,11 @@ class CommandRollbackError(Exception):
     """Exception raised when command rollback fails"""
 
     def __init__(
-            self,
-            message: str,
-            command_name: str,
-            details: Optional[Dict[str, Any]] = None,
-            original_error: Optional[Exception] = None
+        self,
+        message: str,
+        command_name: str,
+        details: Optional[Dict[str, Any]] = None,
+        original_error: Optional[Exception] = None,
     ):
         self.command_name = command_name
         self.details = details or {}
