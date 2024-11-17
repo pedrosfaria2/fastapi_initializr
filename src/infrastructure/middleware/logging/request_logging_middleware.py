@@ -5,7 +5,12 @@ from contextlib import asynccontextmanager
 import time
 
 from .base import BaseCustomMiddleware
-from .constants import DEFAULT_EXCLUDED_PATHS, DEFAULT_EXCLUDED_METHODS, nullcontext, LogLevel
+from .constants import (
+    DEFAULT_EXCLUDED_PATHS,
+    DEFAULT_EXCLUDED_METHODS,
+    nullcontext,
+    LogLevel,
+)
 from .request_logger import RequestLogger
 from .response_logger import ResponseLogger
 
