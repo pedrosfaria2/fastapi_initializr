@@ -17,3 +17,5 @@ class Project:
     python_version: str
     author: Optional[str]
     dependencies: dict[str, str]
+    include_dockerfile: bool = False
+    include_docker_compose: bool = False
