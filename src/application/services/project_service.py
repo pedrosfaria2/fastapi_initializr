@@ -9,7 +9,7 @@ class ProjectService:
     def __init__(self, project_generator: ProjectGenerator):
         self.project_generator = project_generator
 
-    def create_project(self, project_schema: ProjectSchema) -> bytes:
+    async def create_project(self, project_schema: ProjectSchema) -> bytes:
         project = Project(
             name=project_schema.project_name,
             description=project_schema.description,
@@ -25,4 +25,4 @@ class ProjectService:
         )
 
         with tempfile.TemporaryDirectory() as temp_dir:
-            return self.project_generator.generate(project, Path(temp_dir))
+            return await self.project_generator.generate(project, Path(temp_dir))

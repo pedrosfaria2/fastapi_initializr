@@ -5,6 +5,6 @@ from src.domain.entities.project import Project
 
 class ProjectGenerator(ABC):
     @abstractmethod
-    def generate(self, project: Project, output_path: Path) -> bytes:
+    async def generate(self, project: Project, output_path: Path) -> bytes:
         """Generate project structure and return as zip file content"""
         pass

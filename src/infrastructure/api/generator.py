@@ -36,7 +36,7 @@ class GeneratorAPI:
 
     async def create_project(self, project_config: ProjectSchema):
         try:
-            zip_content = self.project_service.create_project(project_config)
+            zip_content = await self.project_service.create_project(project_config)
 
             return Response(
                 content=zip_content,
