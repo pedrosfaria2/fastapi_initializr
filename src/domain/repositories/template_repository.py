@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from pathlib import Path
-from typing import Dict, Any
-from src.domain.entities.project import Project
+from typing import Dict
+
+from jinja2 import Template
 
 
 class TemplateRepository(ABC):
@@ -11,6 +11,6 @@ class TemplateRepository(ABC):
         pass
 
     @abstractmethod
-    def get_template_content(self, template_path: str) -> str:
+    def get_template_content(self, template_path: str) -> Template:
         """Get the content of a specific template file"""
         pass

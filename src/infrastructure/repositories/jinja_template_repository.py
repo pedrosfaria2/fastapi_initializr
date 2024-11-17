@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 from src.domain.repositories.template_repository import TemplateRepository
 from src.domain.entities.project import TemplateType
 
@@ -27,5 +27,6 @@ class JinjaTemplateRepository(TemplateRepository):
         }
         return template_mapping.get(template_type.lower(), {})
 
-    def get_template_content(self, template_path: str) -> str:
+    def get_template_content(self, template_path: str) -> Template:
+        """Get the Jinja2 Template object for a specific template file"""
         return self.env.get_template(template_path)

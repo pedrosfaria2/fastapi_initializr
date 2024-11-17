@@ -21,6 +21,14 @@ class JinjaProjectGenerator(ProjectGenerator):
                     f"No templates found for type: {project.template_type}"
                 )
 
+            if project.include_dockerfile:
+                template_files["docker/Dockerfile"] = "docker/Dockerfile.jinja"
+
+            if project.include_docker_compose:
+                template_files["docker/docker-compose.yml"] = (
+                    "docker/docker-compose.yml.jinja"
+                )
+
             context = {
                 "project_name": project.name,
                 "description": project.description,
