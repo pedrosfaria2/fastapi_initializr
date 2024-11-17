@@ -94,7 +94,9 @@ Refer to the `Makefile` for more details on each command.
      "python_version": "3.10",
      "author": "Your Name",
      "fastapi_version": "0.100.0",
-     "uvicorn_version": "0.22.0"
+     "uvicorn_version": "0.22.0",
+     "include_dockerfile": false,
+     "include_docker_compose": false
    }
    ```
 3. You'll receive a ZIP file containing a minimal FastAPI project structure with:
@@ -102,6 +104,7 @@ Refer to the `Makefile` for more details on each command.
    - requirements.txt
    - README.md
    - .gitignore
+   - Dockerfile and/or docker-compose.yml
 
 ## License
 
