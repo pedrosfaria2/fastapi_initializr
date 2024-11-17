@@ -19,6 +19,7 @@ pydantic = "^2.8.2"
 python-dotenv = "^1.0.1"
 loguru = "^0.7.2"
 pydantic-settings = "^2.6.1"
+psutil = "^6.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

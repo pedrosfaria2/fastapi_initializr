@@ -82,13 +82,29 @@ The `Makefile` provides additional commands for various tasks:
 
 Refer to the `Makefile` for more details on each command.
 
-### Generating a Project (not implemented yet)
+### Generating a Project
 
-1. Select a project template from the available options.
-2. Customize the project settings such as Python version, database, Docker setup, etc.
-3. Generate the project.
-4. Download the generated project as a zip file.
-5. Extract the downloaded zip file and follow the project-specific instructions in its README to set up and run the generated FastAPI project.
+1. Access the API at `/generator/create` endpoint
+2. Provide a minimal configuration:
+   ```json
+   {
+     "project_name": "my_fastapi_app",
+     "description": "My FastAPI Application",
+     "template_type": "minimal",
+     "python_version": "3.10",
+     "author": "Your Name",
+     "fastapi_version": "0.100.0",
+     "uvicorn_version": "0.22.0",
+     "include_dockerfile": false,
+     "include_docker_compose": false
+   }
+   ```
+3. You'll receive a ZIP file containing a minimal FastAPI project structure with:
+   - main.py with basic endpoints
+   - requirements.txt
+   - README.md
+   - .gitignore
+   - Dockerfile and/or docker-compose.yml
 
 ## License
 
