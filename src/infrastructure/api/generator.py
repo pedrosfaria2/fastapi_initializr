@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, FastAPI
 from src.infrastructure.schemas.project import ProjectSchema
 from src.application.services.project_service import ProjectService
 from src.infrastructure.generators.jinja_project_generator import JinjaProjectGenerator
@@ -8,31 +8,45 @@ from src.infrastructure.repositories.jinja_template_repository import (
 
 
 class GeneratorAPI:
-    def __init__(self, app):
-        self.router = APIRouter(prefix="/generator", tags=["Generator"])
+    API_NAME = "generator"
+    API_TAGS = ["Generator"]
+    API_PREFIX = "/generator"
+
+    def __init__(self, app: FastAPI):
+        self.app = app
+        self.router = APIRouter()
 
         template_repository = JinjaTemplateRepository()
         project_generator = JinjaProjectGenerator(template_repository)
         self.project_service = ProjectService(project_generator)
 
-        self._configure_routes()
-        app.include_router(self.router)
+        self._register_routes()
 
-    def _configure_routes(self):
-        @self.router.post("/create")
-        async def create_project(project_config: ProjectSchema):
-            try:
-                zip_content = self.project_service.create_project(project_config)
+    def _register_routes(self):
+        self.router.add_api_route(
+            path="/create",
+            endpoint=self.create_project,
+            methods=["POST"],
+            summary="Generate a new FastAPI project",
+            response_class=Response,
+            response_description="ZIP file containing the generated project",
+        )
 
-                return Response(
-                    content=zip_content,
-                    media_type="application/zip",
-                    headers={
-                        "Content-Disposition": f'attachment; filename="{project_config.project_name}.zip"'
-                    },
-                )
+        self.app.include_router(self.router, prefix=self.API_PREFIX, tags=self.API_TAGS)
 
-            except Exception as e:
-                raise HTTPException(
-                    status_code=500, detail=f"Failed to generate project: {str(e)}"
-                )
+    async def create_project(self, project_config: ProjectSchema):
+        try:
+            zip_content = await self.project_service.create_project(project_config)
+
+            return Response(
+                content=zip_content,
+                media_type="application/zip",
+                headers={
+                    "Content-Disposition": f'attachment; filename="{project_config.project_name}.zip"'
+                },
+            )
+
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, detail=f"Failed to generate project: {str(e)}"
+            )
