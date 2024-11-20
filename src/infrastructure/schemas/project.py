@@ -8,7 +8,7 @@ class ProjectSchema(BaseModel):
     description: str = Field(default="A FastAPI application")
     template_type: TemplateType = Field(default=TemplateType.MINIMAL)
     python_version: str = Field(default="3.10")
-    author: str = Field(default="")
+    author: str = Field(default="Author <example@example.com>")
     dependency_manager: DependencyManager = Field(
         default=DependencyManager.PIP,
         description="Package manager to use (pip or poetry)",
