@@ -17,3 +17,15 @@ class ProjectSchema(BaseModel):
     uvicorn_version: str = Field(default="0.22.0")
     include_dockerfile: bool = Field(default=False)
     include_docker_compose: bool = Field(default=False)
+    include_black: bool = Field(
+        default=False, description="Include Black configuration"
+    )
+    include_conventional_commit: bool = Field(
+        default=False, description="Include Conventional Commit configuration"
+    )
+    include_pre_commit: bool = Field(
+        default=False, description="Include Pre-Commit configuration"
+    )
+    include_flake8: bool = Field(
+        default=False, description="Include Flake8 configuration"
+    )

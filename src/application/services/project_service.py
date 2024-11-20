@@ -23,6 +23,10 @@ class ProjectService:
             },
             include_dockerfile=project_schema.include_dockerfile,
             include_docker_compose=project_schema.include_docker_compose,
+            include_black=project_schema.include_black,
+            include_conventional_commit=project_schema.include_conventional_commit,
+            include_pre_commit=project_schema.include_pre_commit,
+            include_flake8=project_schema.include_flake8,
         )
 
         with tempfile.TemporaryDirectory() as temp_dir:
