@@ -61,6 +61,37 @@ API documentation is available at:
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
+{% if utils_dependencies %}
+## Utilities
+
+This project comes with the following utilities pre-configured:
+
+{% if "black" in utils_dependencies %}
+- **Black**: A code formatter. To format your code, run:
+  ```bash
+  black .
+  ```
+{% endif %}
+{% if "flake8" in utils_dependencies %}
+- **Flake8**: A linting tool for Python. To check for linting errors, run:
+  ```bash
+  flake8 .
+  ```
+{% endif %}
+{% if "pre-commit" in utils_dependencies %}
+- **Pre-Commit Hooks**: Automatically runs checks before commits. To install hooks, run:
+  ```bash
+  pre-commit install
+  ```
+{% endif %}
+{% if "commitizen" in utils_dependencies %}
+- **Commitizen**: For conventional commit messages. To make a commit, run:
+  ```bash
+  cz commit
+  ```
+{% endif %}
+{% endif %}
+
 {% if author %}
 ## Author
 {{ author }}
