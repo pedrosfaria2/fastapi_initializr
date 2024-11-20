@@ -8,6 +8,8 @@ FastAPI Initializr is a tool to quickly generate and bootstrap new FastAPI proje
 - Choose from different project templates
 - Customize Python version, database, and other project settings
 - Include optional features like Docker setup and database migrations
+- Support for both `pip` and `Poetry` as dependency managers
+- Pre-configured utilities like `black`, `flake8`, `pre-commit`, and `commitizen`
 - Download generated project as a zip file
 
 ## Technologies Used
@@ -15,6 +17,7 @@ FastAPI Initializr is a tool to quickly generate and bootstrap new FastAPI proje
 - **FastAPI**: Web framework for building APIs with Python
 - **Pydantic**: Data validation and settings management using Python type annotations
 - **Poetry**: Dependency management and packaging
+- **pip**: Standard Python package installer
 - **Loguru**: Library for flexible logging
 - **Jinja2**: Template engine for generating project files
 - **Pytest**: Testing framework for Python
@@ -26,10 +29,10 @@ FastAPI Initializr is a tool to quickly generate and bootstrap new FastAPI proje
 ### Prerequisites
 
 - Python 3.10+
-- Poetry
-- Docker
-- Docker Compose
-- Make
+- `pip` or `Poetry`
+- Docker (optional)
+- Docker Compose (optional)
+- Make (optional)
 
 ### Installation
 
@@ -70,22 +73,12 @@ To start the FastAPI server, use one of the following commands:
   make run-compose
   ```
 
-Open your web browser and visit `http://localhost:8000/docs` to access the FastAPI Initializr Swagger.
-
-### Other Commands
-
-The `Makefile` provides additional commands for various tasks:
-
-- `make test`: Run tests
-- `make test-coverage`: Run tests and generate coverage report
-- `make clean`: Clean the project
-
-Refer to the `Makefile` for more details on each command.
+Open your web browser and visit `http://localhost:8001/docs` to access the FastAPI Initializr Swagger.
 
 ### Generating a Project
 
-1. Access the API at `/generator/create` endpoint
-2. Provide a minimal configuration:
+1. Access the API at `/generator/create` endpoint.
+2. Provide a configuration payload. Example:
    ```json
    {
      "project_name": "my_fastapi_app",
@@ -95,16 +88,70 @@ Refer to the `Makefile` for more details on each command.
      "author": "Your Name",
      "fastapi_version": "0.100.0",
      "uvicorn_version": "0.22.0",
+     "dependency_manager": "poetry",
      "include_dockerfile": false,
-     "include_docker_compose": false
+     "include_docker_compose": false,
+     "include_black": true,
+     "include_flake8": true,
+     "include_pre_commit": true,
+     "include_conventional_commit": true
    }
    ```
-3. You'll receive a ZIP file containing a minimal FastAPI project structure with:
-   - main.py with basic endpoints
-   - requirements.txt
-   - README.md
-   - .gitignore
-   - Dockerfile and/or docker-compose.yml
+3. The generated ZIP file will include a structured FastAPI project with:
+   - `main.py` with basic endpoints
+   - `requirements.txt` or `pyproject.toml`
+   - `README.md`
+   - `.gitignore`
+   - Optional Dockerfile and/or docker-compose.yml
+   - Pre-configured utilities
+
+## Dependency Management
+
+FastAPI Initializr supports both `pip` and `Poetry` for managing dependencies. The choice of manager is specified in the configuration (`dependency_manager`).
+
+### Using `pip`
+
+If `pip` is selected:
+- A `requirements.txt` file will be generated.
+- Install dependencies with:
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+### Using `Poetry`
+
+If `Poetry` is selected:
+- A `pyproject.toml` file will be generated.
+- Install dependencies with:
+  ```bash
+  poetry install
+  ```
+
+## Utilities
+
+This tool provides pre-configured utilities to help maintain code quality and enforce standards:
+
+- **Black**: Code formatter. Run:
+  ```bash
+  black .
+  ```
+
+- **Flake8**: Linter for Python. Run:
+  ```bash
+  flake8 .
+  ```
+
+- **Pre-Commit**: Runs checks before commits. Install hooks:
+  ```bash
+  pre-commit install
+  ```
+
+- **Commitizen**: For conventional commits. Make a commit:
+  ```bash
+  cz commit
+  ```
+
+These utilities are included in the generated project if enabled in the configuration.
 
 ## License
 
@@ -116,3 +163,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [Pydantic](https://pydantic-docs.helpmanual.io/)
 - [Poetry](https://python-poetry.org/)
 - [Jinja2](https://jinja.palletsprojects.com/)
+- [Black](https://github.com/psf/black)
+- [Flake8](https://flake8.pycqa.org/)
+- [Pre-Commit](https://pre-commit.com/)
+- [Commitizen](https://commitizen-tools.github.io/commitizen/)
