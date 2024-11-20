@@ -3,10 +3,11 @@ from typing import Dict, Any
 from loguru import logger
 from src.domain.commands.base import ProjectCommand
 from src.domain.entities.command_result import CommandResult
-
 from src.domain.entities.project import Project
 from src.domain.repositories.template_repository import TemplateRepository
+
 from src.infrastructure.enumerators.command_priority import CommandPriority
+from src.infrastructure.enumerators.dependency_manager import DependencyManager
 
 
 class DocumentationCommand(ProjectCommand):
@@ -23,13 +24,27 @@ class DocumentationCommand(ProjectCommand):
 
     @property
     def template_files(self) -> Dict[str, str]:
-        return {"README.md": "readme/README.md.jinja"}
+        return {
+            "README.pip.md": "readme/README.pip.jinja",
+            "README.poetry.md": "readme/README.poetry.jinja",
+        }
+
+    @staticmethod
+    def _get_readme_template(dependency_manager: DependencyManager) -> str:
+        return (
+            "readme/README.poetry.jinja"
+            if dependency_manager == DependencyManager.POETRY
+            else "readme/README.pip.jinja"
+        )
 
     async def validate(self, project: Project, context: Dict[str, Any]) -> bool:
         logger.debug(f"Validating {self.name} command")
         try:
-            for _, template_path in self.template_files.items():
-                self.template_repository.get_template_content(template_path)
+            dependency_manager = DependencyManager(
+                context.get("dependency_manager", DependencyManager.PIP)
+            )
+            template_path = self._get_readme_template(dependency_manager)
+            self.template_repository.get_template_content(template_path)
             return True
         except Exception as e:
             logger.error(f"Validation failed for {self.name}: {str(e)}")
@@ -41,13 +56,17 @@ class DocumentationCommand(ProjectCommand):
         logger.info(f"Executing {self.name} command")
         changes = {}
         try:
-            for dest_path, template_path in self.template_files.items():
-                template = self.template_repository.get_template_content(template_path)
-                content = template.render(**context)
-                file_path = output_path.joinpath(dest_path)
-                file_path.write_text(content)
-                changes[str(file_path)] = None
-                logger.debug(f"Created file: {file_path}")
+            dependency_manager = DependencyManager(
+                context.get("dependency_manager", DependencyManager.PIP)
+            )
+            template_path = self._get_readme_template(dependency_manager)
+            template = self.template_repository.get_template_content(template_path)
+            content = template.render(**context)
+
+            file_path = output_path / "README.md"
+            file_path.write_text(content)
+            changes[str(file_path)] = None
+            logger.debug(f"Created README.md using {dependency_manager.value} template")
 
             return CommandResult(success=True, changes=changes)
 
