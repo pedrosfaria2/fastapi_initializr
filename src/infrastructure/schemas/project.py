@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
-from src.domain.entities.project import TemplateType
 from src.infrastructure.enumerators.dependency_manager import DependencyManager
+from src.infrastructure.enumerators.template_type import TemplateType
 
 
 class ProjectSchema(BaseModel):

@@ -1,12 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
-from enum import Enum
-
-
-class TemplateType(str, Enum):
-    MINIMAL = "minimal"
-    BASIC = "basic"
-    FULL = "full"
+from src.infrastructure.enumerators.template_type import TemplateType
 
 
 @dataclass
