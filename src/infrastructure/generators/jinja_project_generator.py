@@ -14,6 +14,7 @@ from src.infrastructure.commands.core_files import CoreFilesCommand
 from src.infrastructure.commands.dependency import DependencyManagementCommand
 from src.infrastructure.commands.docker import DockerCommand
 from src.infrastructure.commands.documentation import DocumentationCommand
+from src.infrastructure.commands.utils import UtilsCommand
 from src.infrastructure.exceptions.command_execution import (
     CommandValidationError,
     CommandExecutionError,
@@ -37,14 +38,29 @@ class JinjaProjectGenerator(ProjectGenerator):
         dependency_manager = DependencyManagementCommand(
             template_repository=self.template_repository
         )
+        utils = UtilsCommand(template_repository=self.template_repository)
 
         self.registry.register(core_files)
         self.registry.register(docker)
         self.registry.register(documentation)
         self.registry.register(dependency_manager)
+        self.registry.register(utils)
 
     @staticmethod
     def _create_context(project: Project) -> Dict[str, Any]:
+        dependency_map = {
+            "include_black": "black",
+            "include_flake8": "flake8",
+            "include_pre_commit": "pre-commit",
+            "include_conventional_commit": "commitizen",
+        }
+
+        utils_dependencies = [
+            dependency
+            for option, dependency in dependency_map.items()
+            if getattr(project, option, False)
+        ]
+
         return {
             "project_name": project.name,
             "description": project.description,
@@ -55,6 +71,7 @@ class JinjaProjectGenerator(ProjectGenerator):
             "include_dockerfile": project.include_dockerfile,
             "include_docker_compose": project.include_docker_compose,
             "dependency_manager": project.dependency_manager,
+            "utils_dependencies": utils_dependencies,
         }
 
     async def _execute_commands(
