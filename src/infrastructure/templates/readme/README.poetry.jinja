@@ -11,27 +11,34 @@
 {% if include_docker_compose %}
 - Docker Compose
 {% endif %}
+- Poetry ({{ poetry_version|default("1.7.1") }}+)
 
 ## Installation
 
-1. Create a virtual environment:
+1. Install Poetry:
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   curl -sSL https://install.python-poetry.org | python3 -
    ```
 
 2. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   poetry install
    ```
 
 ## Running the Application
 
-These are the available options to run this application.:
+These are the available options to run this application:
 
-### Local Python
+### Local Python with Poetry
 
 ```bash
+poetry run python main.py
+```
+
+OR
+
+```bash
+poetry shell
 python main.py
 ```
 
@@ -54,6 +61,20 @@ docker run -p 8000:8000 {{ project_name }}
 docker compose -f docker/docker-compose.yml up
 ```
 {% endif %}
+
+## Development
+
+### Adding Dependencies
+
+```bash
+poetry add package_name
+```
+
+### Adding Development Dependencies
+
+```bash
+poetry add --group dev package_name
+```
 
 The application will be available at http://localhost:8000
 

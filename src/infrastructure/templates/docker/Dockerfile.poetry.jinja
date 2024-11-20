@@ -11,14 +11,23 @@ RUN apt-get update && \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements file
-COPY ../requirements.txt .
+# Install Poetry
+ENV POETRY_HOME=/opt/poetry
+ENV POETRY_VERSION=1.7.1
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Add Poetry to PATH
+ENV PATH="${POETRY_HOME}/bin:${PATH}"
+
+# Copy Poetry configuration files
+COPY pyproject.toml poetry.lock ./
+
+# Configure Poetry and install dependencies
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-ansi --no-dev
 
 # Copy the rest of the application
-COPY .. .
+COPY . .
 
 # Production stage
 FROM python:{{ python_version }}-slim

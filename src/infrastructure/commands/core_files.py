@@ -25,7 +25,6 @@ class CoreFilesCommand(ProjectCommand):
     def template_files(self) -> Dict[str, str]:
         return {
             "main.py": "minimal/main.py.jinja",
-            "requirements.txt": "minimal/requirements.txt.jinja",
             ".gitignore": "minimal/gitignore.jinja",
         }
 

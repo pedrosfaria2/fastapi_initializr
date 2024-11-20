@@ -16,6 +16,7 @@ class ProjectService:
             template_type=project_schema.template_type,
             python_version=project_schema.python_version,
             author=project_schema.author,
+            dependency_manager=project_schema.dependency_manager,
             dependencies={
                 "fastapi": project_schema.fastapi_version,
                 "uvicorn": project_schema.uvicorn_version,

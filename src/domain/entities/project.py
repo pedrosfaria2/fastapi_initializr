@@ -19,3 +19,4 @@ class Project:
     dependencies: dict[str, str]
     include_dockerfile: bool = False
     include_docker_compose: bool = False
+    dependency_manager: str = "pip"
