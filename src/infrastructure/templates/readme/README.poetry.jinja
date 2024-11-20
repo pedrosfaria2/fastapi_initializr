@@ -1,0 +1,88 @@
+# {{ project_name }}
+
+{{ description }}
+
+## Requirements
+
+- Python {{ python_version }}+
+{% if include_dockerfile or include_docker_compose %}
+- Docker
+{% endif %}
+{% if include_docker_compose %}
+- Docker Compose
+{% endif %}
+- Poetry ({{ poetry_version|default("1.7.1") }}+)
+
+## Installation
+
+1. Install Poetry:
+   ```bash
+   curl -sSL https://install.python-poetry.org | python3 -
+   ```
+
+2. Install dependencies:
+   ```bash
+   poetry install
+   ```
+
+## Running the Application
+
+These are the available options to run this application:
+
+### Local Python with Poetry
+
+```bash
+poetry run python main.py
+```
+
+OR
+
+```bash
+poetry shell
+python main.py
+```
+
+{% if include_dockerfile %}
+### Using Docker
+
+```bash
+# Build the image
+docker build -t {{ project_name }} -f docker/Dockerfile .
+
+# Run the container
+docker run -p 8000:8000 {{ project_name }}
+```
+{% endif %}
+
+{% if include_docker_compose %}
+### Using Docker Compose
+
+```bash
+docker compose -f docker/docker-compose.yml up
+```
+{% endif %}
+
+## Development
+
+### Adding Dependencies
+
+```bash
+poetry add package_name
+```
+
+### Adding Development Dependencies
+
+```bash
+poetry add --group dev package_name
+```
+
+The application will be available at http://localhost:8000
+
+API documentation is available at:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+{% if author %}
+## Author
+{{ author }}
+{% endif %}

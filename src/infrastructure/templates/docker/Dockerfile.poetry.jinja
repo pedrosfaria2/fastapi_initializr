@@ -1,0 +1,57 @@
+# Builder stage
+FROM python:{{ python_version }}-slim as builder
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies required for building Python packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+ENV POETRY_HOME=/opt/poetry
+ENV POETRY_VERSION=1.7.1
+RUN curl -sSL https://install.python-poetry.org | python3 -
+
+# Add Poetry to PATH
+ENV PATH="${POETRY_HOME}/bin:${PATH}"
+
+# Copy Poetry configuration files
+COPY pyproject.toml poetry.lock ./
+
+# Configure Poetry and install dependencies
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-ansi --no-dev
+
+# Copy the rest of the application
+COPY . .
+
+# Production stage
+FROM python:{{ python_version }}-slim
+
+# Set working directory
+WORKDIR /app
+
+# Create non-root user
+RUN adduser --disabled-password --gecos '' appuser
+
+# Copy only necessary files from builder
+COPY --from=builder /usr/local/lib/python{{ python_version }}/site-packages/ /usr/local/lib/python{{ python_version }}/site-packages/
+COPY --from=builder /app /app
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8000
+
+# Switch to non-root user
+USER appuser
+
+# Expose port
+EXPOSE $PORT
+
+# Run the application
+CMD ["python", "main.py"]

@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = "{{ description }}"
+authors = ["{{ author }}"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^{{ python_version }}"
+fastapi = "^{{ fastapi_version }}"
+uvicorn = {extras = ["standard"], version = "^{{ uvicorn_version }}"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
