@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from src.domain.entities.project import TemplateType
+from src.infrastructure.enumerators.dependency_manager import DependencyManager
 
 
 class ProjectSchema(BaseModel):
@@ -8,6 +9,10 @@ class ProjectSchema(BaseModel):
     template_type: TemplateType = Field(default=TemplateType.MINIMAL)
     python_version: str = Field(default="3.10")
     author: str = Field(default="")
+    dependency_manager: DependencyManager = Field(
+        default=DependencyManager.PIP,
+        description="Package manager to use (pip or poetry)",
+    )
     fastapi_version: str = Field(default="0.100.0")
     uvicorn_version: str = Field(default="0.22.0")
     include_dockerfile: bool = Field(default=False)
