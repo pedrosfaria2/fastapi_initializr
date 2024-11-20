@@ -11,6 +11,7 @@ from src.domain.services.project_generator import ProjectGenerator
 from src.domain.commands.registry import CommandRegistry
 from src.domain.entities.project import Project
 from src.infrastructure.commands.core_files import CoreFilesCommand
+from src.infrastructure.commands.dependency import DependencyManagementCommand
 from src.infrastructure.commands.docker import DockerCommand
 from src.infrastructure.commands.documentation import DocumentationCommand
 from src.infrastructure.exceptions.command_execution import (
@@ -26,7 +27,6 @@ class JinjaProjectGenerator(ProjectGenerator):
         self._register_commands()
 
     def _register_commands(self):
-        """Register all available commands with their dependencies"""
         logger.info("Registering project commands")
 
         core_files = CoreFilesCommand(template_repository=self.template_repository)
@@ -34,10 +34,14 @@ class JinjaProjectGenerator(ProjectGenerator):
         documentation = DocumentationCommand(
             template_repository=self.template_repository
         )
+        dependency_manager = DependencyManagementCommand(
+            template_repository=self.template_repository
+        )
 
         self.registry.register(core_files)
         self.registry.register(docker)
         self.registry.register(documentation)
+        self.registry.register(dependency_manager)
 
     @staticmethod
     def _create_context(project: Project) -> Dict[str, Any]:
@@ -50,6 +54,7 @@ class JinjaProjectGenerator(ProjectGenerator):
             "uvicorn_version": project.dependencies["uvicorn"],
             "include_dockerfile": project.include_dockerfile,
             "include_docker_compose": project.include_docker_compose,
+            "dependency_manager": project.dependency_manager,
         }
 
     async def _execute_commands(
