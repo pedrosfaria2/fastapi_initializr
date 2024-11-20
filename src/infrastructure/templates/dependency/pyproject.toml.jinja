@@ -4,11 +4,19 @@ version = "0.1.0"
 description = "{{ description }}"
 authors = ["{{ author }}"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^{{ python_version }}"
 fastapi = "^{{ fastapi_version }}"
 uvicorn = {extras = ["standard"], version = "^{{ uvicorn_version }}"}
+
+{% if utils_dependencies %}
+# Utility dependencies
+{% for dep in utils_dependencies %}
+{{ dep }} = "*"
+{% endfor %}
+{% endif %}
 
 [build-system]
 requires = ["poetry-core"]

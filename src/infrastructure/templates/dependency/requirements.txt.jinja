@@ -1,2 +1,9 @@
 fastapi=={{ fastapi_version }}
 uvicorn[standard]=={{ uvicorn_version }}
+
+{% if utils_dependencies %}
+# Utility dependencies
+{% for dep in utils_dependencies %}
+{{ dep }}
+{% endfor %}
+{% endif %}
