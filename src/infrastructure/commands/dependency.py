@@ -1,4 +1,3 @@
-from enum import Enum
 from pathlib import Path
 from typing import Dict, Any
 from loguru import logger
@@ -42,6 +41,19 @@ class DependencyManagementCommand(ProjectCommand):
             )
         return files
 
+    @staticmethod
+    def _get_utils_dependencies(project: Project) -> list[str]:
+        """Return a list of utility dependencies based on project options."""
+        dependency_map = {
+            "include_black": "black",
+            "include_flake8": "flake8",
+            "include_pre_commit": "pre-commit",
+            "include_conventional_commit": "commitizen",
+        }
+        return [
+            dep for option, dep in dependency_map.items() if getattr(project, option)
+        ]
+
     async def validate(self, project: Project, context: Dict[str, Any]) -> bool:
         logger.debug(f"Validating {self.name} command")
         try:
@@ -77,6 +89,9 @@ class DependencyManagementCommand(ProjectCommand):
         changes = {}
 
         try:
+            utils_dependencies = self._get_utils_dependencies(project)
+            context["utils_dependencies"] = utils_dependencies
+
             dependency_manager = context.get(
                 "dependency_manager", DependencyManager.PIP
             )
