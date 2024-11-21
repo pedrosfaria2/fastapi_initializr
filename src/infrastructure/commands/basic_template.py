@@ -41,9 +41,7 @@ class BasicTemplateCommand(ProjectCommand):
         try:
             for template_path in self.template_files.values():
                 self.template_repository.get_template_content(template_path)
-
             self.template_repository.get_template_content("common/empty_init.py.jinja")
-
             return True
         except Exception as e:
             logger.error(f"Validation failed for {self.name}: {str(e)}")
@@ -55,17 +53,19 @@ class BasicTemplateCommand(ProjectCommand):
         logger.info(f"Executing {self.name} command")
         changes = {}
         try:
-            empty_init = self.template_repository.get_template_content(
-                "common/empty_init.py.jinja"
-            )
-
             for dir_path in self.init_dirs:
-                (output_path / dir_path).mkdir(parents=True, exist_ok=True)
+                full_dir_path = output_path / dir_path
+                full_dir_path.mkdir(parents=True, exist_ok=True)
                 changes[f"dir:{dir_path}"] = None
 
+                empty_init = self.template_repository.get_template_content(
+                    "common/empty_init.py.jinja"
+                )
                 init_file = output_path / dir_path / "__init__.py"
                 init_file.write_text(empty_init.render())
                 changes[str(init_file)] = None
+
+            (output_path / "app/routers").mkdir(parents=True, exist_ok=True)
 
             for dest_path, template_path in self.template_files.items():
                 template = self.template_repository.get_template_content(template_path)

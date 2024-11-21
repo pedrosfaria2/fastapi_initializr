@@ -10,11 +10,13 @@ from src.domain.repositories.template_repository import TemplateRepository
 from src.domain.services.project_generator import ProjectGenerator
 from src.domain.commands.registry import CommandRegistry
 from src.domain.entities.project import Project
+from src.infrastructure.commands.basic_template import BasicTemplateCommand
 from src.infrastructure.commands.minimal_template import MinimalTemplateCommand
 from src.infrastructure.commands.dependency import DependencyManagementCommand
 from src.infrastructure.commands.docker import DockerCommand
 from src.infrastructure.commands.documentation import DocumentationCommand
 from src.infrastructure.commands.utils import UtilsCommand
+from src.infrastructure.enumerators.template_type import TemplateType
 from src.infrastructure.exceptions.command_execution import (
     CommandValidationError,
     CommandExecutionError,
@@ -25,26 +27,15 @@ class JinjaProjectGenerator(ProjectGenerator):
     def __init__(self, template_repository: TemplateRepository):
         self.template_repository = template_repository
         self.registry = CommandRegistry()
-        self._register_commands()
 
-    def _register_commands(self):
-        logger.info("Registering project commands")
-
-        core_files = MinimalTemplateCommand(template_repository=self.template_repository)
-        docker = DockerCommand(template_repository=self.template_repository)
-        documentation = DocumentationCommand(
-            template_repository=self.template_repository
-        )
-        dependency_manager = DependencyManagementCommand(
-            template_repository=self.template_repository
-        )
-        utils = UtilsCommand(template_repository=self.template_repository)
-
-        self.registry.register(core_files)
-        self.registry.register(docker)
-        self.registry.register(documentation)
-        self.registry.register(dependency_manager)
-        self.registry.register(utils)
+        self.template_commands = {
+            TemplateType.MINIMAL: MinimalTemplateCommand(
+                template_repository=self.template_repository
+            ),
+            TemplateType.BASIC: BasicTemplateCommand(
+                template_repository=self.template_repository
+            ),
+        }
 
     @staticmethod
     def _create_context(project: Project) -> Dict[str, Any]:
@@ -74,6 +65,29 @@ class JinjaProjectGenerator(ProjectGenerator):
             "utils_dependencies": utils_dependencies,
         }
 
+    def _register_commands(self, project: Project) -> None:
+        logger.info("Registering project commands")
+
+        self.registry = CommandRegistry()
+
+        template_command = self.template_commands.get(project.template_type)
+        if not template_command:
+            raise ValueError(f"Unknown template type: {project.template_type}")
+        self.registry.register(template_command)
+
+        self.registry.register(
+            DockerCommand(template_repository=self.template_repository)
+        )
+        self.registry.register(
+            DocumentationCommand(template_repository=self.template_repository)
+        )
+        self.registry.register(
+            DependencyManagementCommand(template_repository=self.template_repository)
+        )
+        self.registry.register(
+            UtilsCommand(template_repository=self.template_repository)
+        )
+
     async def _execute_commands(
         self, project: Project, context: Dict[str, Any], output_path: Path
     ) -> None:
@@ -86,7 +100,7 @@ class JinjaProjectGenerator(ProjectGenerator):
             for command in commands:
                 if not await command.validate(project, context):
                     raise CommandValidationError(
-                        f"Validation failed for command: {command.name}"
+                        f"Validation failed for command: {command.name}", command.name
                     )
 
             logger.info("Executing commands in priority order")
@@ -96,24 +110,35 @@ class JinjaProjectGenerator(ProjectGenerator):
 
                 if not result.success:
                     raise CommandExecutionError(
-                        f"Command failed: {command.name} - {result.error}"
+                        f"Command failed: {command.name} - {result.error}",
+                        command.name,
+                        {"error": result.error},
                     )
 
         except Exception as exc:
             logger.error(f"Command execution failed: {str(exc)}")
             logger.info("Starting rollback process")
+
             for command, result in reversed(executed_commands):
-                await command.rollback(project, context, result.changes)
+                try:
+                    await command.rollback(project, context, result.changes)
+                except Exception as rollback_error:
+                    logger.error(
+                        f"Failed to rollback command {command.name}: {str(rollback_error)}"
+                    )
             raise exc
 
     async def generate(self, project: Project, output_path: Path) -> bytes:
         temp_dir = None
         try:
             logger.info(f"Starting project generation: {project.name}")
+
             ctx = self._create_context(project)
+
             temp_dir = output_path / project.name
             temp_dir.mkdir(exist_ok=True)
 
+            self._register_commands(project)
             await self._execute_commands(project, ctx, temp_dir)
 
             logger.info("Creating ZIP archive")
@@ -132,8 +157,9 @@ class JinjaProjectGenerator(ProjectGenerator):
         except Exception as exc:
             logger.error(f"Project generation failed: {str(exc)}")
             raise RuntimeError(f"Failed to generate project: {str(exc)}")
+
         finally:
-            if temp_dir:
+            if temp_dir and temp_dir.exists():
                 try:
                     import shutil
 
