@@ -9,7 +9,7 @@ from src.domain.repositories.template_repository import TemplateRepository
 from src.infrastructure.enumerators.command_priority import CommandPriority
 
 
-class CoreFilesCommand(ProjectCommand):
+class MinimalTemplateCommand(ProjectCommand):
     def __init__(self, template_repository: TemplateRepository):
         self.template_repository = template_repository
 

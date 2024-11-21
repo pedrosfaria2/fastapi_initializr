@@ -10,7 +10,7 @@ from src.domain.repositories.template_repository import TemplateRepository
 from src.domain.services.project_generator import ProjectGenerator
 from src.domain.commands.registry import CommandRegistry
 from src.domain.entities.project import Project
-from src.infrastructure.commands.core_files import CoreFilesCommand
+from src.infrastructure.commands.minimal_template import MinimalTemplateCommand
 from src.infrastructure.commands.dependency import DependencyManagementCommand
 from src.infrastructure.commands.docker import DockerCommand
 from src.infrastructure.commands.documentation import DocumentationCommand
@@ -30,7 +30,7 @@ class JinjaProjectGenerator(ProjectGenerator):
     def _register_commands(self):
         logger.info("Registering project commands")
 
-        core_files = CoreFilesCommand(template_repository=self.template_repository)
+        core_files = MinimalTemplateCommand(template_repository=self.template_repository)
         docker = DockerCommand(template_repository=self.template_repository)
         documentation = DocumentationCommand(
             template_repository=self.template_repository
