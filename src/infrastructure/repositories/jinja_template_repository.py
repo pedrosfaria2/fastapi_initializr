@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Dict
 from jinja2 import Environment, FileSystemLoader, Template
 from src.domain.repositories.template_repository import TemplateRepository
-from src.domain.entities.project import TemplateType
+from src.infrastructure.enumerators.template_type import TemplateType
 
 
 class JinjaTemplateRepository(TemplateRepository):
