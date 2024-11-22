@@ -1,1 +1,30 @@
-# not empty init file
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+class APIBuilder:
+    def __init__(self, app: FastAPI):
+        self.app = app
+        self._configure_middlewares()
+        self._configure_routes()
+
+    def _configure_middlewares(self):
+        self.app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
+    def _configure_routes(self):
+        from app.routers import example
+        self.app.include_router(example.router, prefix="/api/v1")
+
+    @classmethod
+    def create(cls) -> FastAPI:
+        app = FastAPI(
+            title="{{ project_name }}",
+            description="{{ description }}",
+            version="0.1.0",
+        )
+        return cls(app).app
