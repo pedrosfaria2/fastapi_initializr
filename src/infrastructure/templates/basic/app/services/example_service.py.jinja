@@ -1,0 +1,71 @@
+from typing import List, Optional, Dict, Any
+from loguru import logger
+from pydantic import BaseModel
+from app.schemas.example_schemas import ExampleCreate, Example
+
+
+class ExampleService:
+    _instance = None
+    _examples: List[Dict[str, Any]] = []
+    _counter: int = 0
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            logger.info("ExampleService initialized")
+        return cls._instance
+
+    async def create(self, example: ExampleCreate) -> Example:
+        self.__class__._counter += 1
+        new_example = Example(
+            id=self._counter,
+            name=example.name,
+            description=example.description
+        )
+        self.__class__._examples.append(new_example.model_dump())
+        logger.info(f"Created new example with id {self._counter}")
+        return new_example
+
+    async def list_all(self) -> List[Example]:
+        logger.info(f"Retrieving all examples. Total: {len(self._examples)}")
+        return [Example(**example) for example in self._examples]
+
+    async def get_by_id(self, example_id: int) -> Optional[Example]:
+        example_dict = next(
+            (example for example in self._examples if example["id"] == example_id),
+            None
+        )
+        if example_dict:
+            logger.info(f"Retrieved example {example_id}")
+            return Example(**example_dict)
+        logger.warning(f"Example {example_id} not found")
+        return None
+
+    async def update(self, example_id: int, example: ExampleCreate) -> Optional[Example]:
+        existing_idx = next(
+            (i for i, example in enumerate(self._examples) if example["id"] == example_id),
+            None
+        )
+        if existing_idx is not None:
+            updated = Example(
+                id=example_id,
+                name=example.name,
+                description=example.description
+            )
+            self.__class__._examples[existing_idx] = updated.model_dump()
+            logger.info(f"Updated example {example_id}")
+            return updated
+        logger.warning(f"Failed to update: example {example_id} not found")
+        return None
+
+    async def delete(self, example_id: int) -> bool:
+        example_idx = next(
+            (i for i, example in enumerate(self._examples) if example["id"] == example_id),
+            None
+        )
+        if example_idx is not None:
+            self.__class__._examples.pop(example_idx)
+            logger.info(f"Deleted example {example_id}")
+            return True
+        logger.warning(f"Failed to delete: example {example_id} not found")
+        return False

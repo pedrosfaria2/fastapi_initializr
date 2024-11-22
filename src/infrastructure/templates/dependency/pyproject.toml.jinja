@@ -10,6 +10,10 @@ package-mode = false
 python = "^{{ python_version }}"
 fastapi = "^{{ fastapi_version }}"
 uvicorn = {extras = ["standard"], version = "^{{ uvicorn_version }}"}
+loguru = "*"
+pydantic_settings = "*"
+pydantic = "*"
+python-dotenv = "*"
 
 {% if utils_dependencies %}
 # Utility dependencies

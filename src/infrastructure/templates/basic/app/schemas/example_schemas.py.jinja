@@ -1,0 +1,12 @@
+from pydantic import BaseModel
+
+
+class ExampleCreate(BaseModel):
+    name: str
+    description: str | None = None
+
+
+class Example(BaseModel):
+    id: int
+    name: str
+    description: str | None = None

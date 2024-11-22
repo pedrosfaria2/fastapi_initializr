@@ -1,0 +1,77 @@
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List
+from datetime import datetime
+from loguru import logger
+from app.core.config import settings
+from app.services.example_service import ExampleService
+from app.schemas.example_schemas import Example, ExampleCreate
+
+router = APIRouter()
+
+
+def get_service():
+    return ExampleService()
+
+
+@router.get("/health")
+async def health_check():
+    logger.debug("Health check requested")
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "environment": settings.ENVIRONMENT
+    }
+
+
+@router.post("/examples", response_model=Example)
+async def create_example(
+    example: ExampleCreate,
+    service: ExampleService = Depends(get_service)
+):
+    """Create a new example"""
+    logger.debug(f"Creating new example: {example}")
+    return await service.create(example)
+
+
+@router.get("/examples", response_model=List[Example])
+async def list_examples(service: ExampleService = Depends(get_service)):
+    """List all examples"""
+    logger.debug("Listing all examples")
+    return await service.list_all()
+
+
+@router.get("/examples/{example_id}", response_model=Example)
+async def get_example(example_id: int, service: ExampleService = Depends(get_service)):
+    """Get a specific example by ID"""
+    logger.debug(f"Getting example {example_id}")
+    example = await service.get_by_id(example_id)
+    if not example:
+        logger.warning(f"Example {example_id} not found")
+        raise HTTPException(status_code=404, detail="Example not found")
+    return example
+
+
+@router.put("/examples/{example_id}", response_model=Example)
+async def update_example(
+    example_id: int,
+    example: ExampleCreate,
+    service: ExampleService = Depends(get_service)
+):
+    """Update an example by ID"""
+    logger.debug(f"Updating example {example_id}: {example}")
+    updated = await service.update(example_id, example)
+    if not updated:
+        logger.warning(f"Example {example_id} not found for update")
+        raise HTTPException(status_code=404, detail="Example not found")
+    return updated
+
+
+@router.delete("/examples/{example_id}")
+async def delete_example(example_id: int, service: ExampleService = Depends(get_service)):
+    """Delete an example by ID"""
+    logger.debug(f"Deleting example {example_id}")
+    deleted = await service.delete(example_id)
+    if not deleted:
+        logger.warning(f"Example {example_id} not found for deletion")
+        raise HTTPException(status_code=404, detail="Example not found")
+    return {"message": f"Example {example_id} deleted"}

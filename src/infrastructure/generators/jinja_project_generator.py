@@ -27,12 +27,8 @@ class JinjaProjectGenerator(ProjectGenerator):
         self.template_repository = template_repository
         self.registry = CommandRegistry()
         self.template_commands = {
-            TemplateType.MINIMAL: MinimalTemplateCommand(
-                template_repository=self.template_repository
-            ),
-            TemplateType.BASIC: BasicTemplateCommand(
-                template_repository=self.template_repository
-            ),
+            TemplateType.MINIMAL: MinimalTemplateCommand,
+            TemplateType.BASIC: BasicTemplateCommand,
         }
 
     @staticmethod
@@ -68,20 +64,25 @@ class JinjaProjectGenerator(ProjectGenerator):
     def _register_commands(self, project: Project) -> None:
         logger.info("Registering project commands")
         self.registry = CommandRegistry()
-        template_command = self.template_commands.get(project.template_type)
-        if not template_command:
+        template_command_cls = self.template_commands.get(project.template_type)
+        if not template_command_cls:
             raise ValueError(f"Unknown template type: {project.template_type}")
-        commands = [
-            template_command,
-            DockerCommand,
-            DocumentationCommand,
-            DependencyManagementCommand,
-            UtilsCommand,
-        ]
-        for command in commands:
-            self.registry.register(
-                command(template_repository=self.template_repository)
-            )
+
+        self.registry.register(
+            template_command_cls(template_repository=self.template_repository)
+        )
+        self.registry.register(
+            DockerCommand(template_repository=self.template_repository)
+        )
+        self.registry.register(
+            DocumentationCommand(template_repository=self.template_repository)
+        )
+        self.registry.register(
+            DependencyManagementCommand(template_repository=self.template_repository)
+        )
+        self.registry.register(
+            UtilsCommand(template_repository=self.template_repository)
+        )
 
     async def _execute_commands(
         self, project: Project, context: Dict[str, Any], output_path: Path

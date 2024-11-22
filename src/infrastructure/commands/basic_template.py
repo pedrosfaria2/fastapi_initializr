@@ -30,11 +30,12 @@ class BasicTemplateCommand(ProjectCommand):
             "app/models/example_model.py": "basic/app/models/example_model.py.jinja",
             "app/db/connection.py": "basic/app/db/connection.py.jinja",
             "app/core/config.py": "basic/app/core/config.py.jinja",
+            "app/schemas/example_schemas.py": "basic/app/schemas/example_schemas.py.jinja",
         }
 
     @property
     def init_dirs(self) -> Set[str]:
-        return {"app", "app/services", "app/models", "app/db", "app/core"}
+        return {"app", "app/services", "app/models", "app/db", "app/core", "app/schemas"}
 
     async def validate(self, project: Project, context: Dict[str, Any]) -> bool:
         logger.debug(f"Validating {self.name} command")
