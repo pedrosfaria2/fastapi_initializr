@@ -5,7 +5,15 @@ FastAPI Initializr is a tool to quickly generate and bootstrap new FastAPI proje
 ## Features
 
 - Generate FastAPI project structure
-- Choose from different project templates
+- Choose from different project templates:
+  - **Minimal**: Basic FastAPI setup with essential configurations
+  - **Basic**: Extended template with pre-configured structure (in progress) including:
+    - Organized directory structure (`app/routers`, `app/services`, `app/models`, etc.)
+    - Example CRUD endpoints
+    - Health check endpoint
+    - Basic SQLite integration
+    - Logging configuration
+    - More features coming soon!
 - Customize Python version, database, and other project settings
 - Include optional features like Docker setup and database migrations
 - Support for both `pip` and `Poetry` as dependency managers
@@ -83,7 +91,7 @@ Open your web browser and visit `http://localhost:8001/docs` to access the FastA
    {
      "project_name": "my_fastapi_app",
      "description": "My FastAPI Application",
-     "template_type": "minimal",
+     "template_type": "minimal",  // or "basic" for the extended template
      "python_version": "3.10",
      "author": "Your Name",
      "fastapi_version": "0.100.0",
@@ -104,6 +112,11 @@ Open your web browser and visit `http://localhost:8001/docs` to access the FastA
    - `.gitignore`
    - Optional Dockerfile and/or docker-compose.yml
    - Pre-configured utilities
+   - Additional structure and features if using the "basic" template (work in progress)
+
+## Project Status
+
+The basic template is currently under development. While the core functionality is implemented, including the directory structure, CRUD endpoints, and basic configurations, some features are still being refined and enhanced. Feel free to try it out and provide feedback!
 
 ## Dependency Management
 
